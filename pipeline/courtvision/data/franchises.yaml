@@ -1,0 +1,198 @@
+# Court Vision franchise registry
+#
+# Keyed by TEAM_ID, with two hard-won caveats established empirically.
+#
+# 1. TEAM_ABBREVIATION is volatile. TEAM_ID 1611661317 carried PHO from 1997
+#    through 2024 and PHX from 2025, with no franchise change behind it. The
+#    provider simply changed a string. Anything keyed on the abbreviation splits
+#    Phoenix in two at that boundary.
+#
+# 2. TEAM_ID does NOT mean "the same franchise". It means "the same provider
+#    identity". TEAM_ID 1611661327 was the original Portland Fire (2000-2002,
+#    folded) and is ALSO the 2026 Portland Fire expansion team. Two unrelated
+#    franchises, 24 years apart, one identifier. That is what `lineage_break`
+#    marks, and history must never be connected across it.
+#
+# A rename stays inside an era. A lineage break starts a new one.
+#
+# Seasons are WNBA season years. Spike 01 confirmed an API season string is
+# named by its leading year, so '2025-26' is the 2025 season.
+#
+# Abbreviations and season spans below are taken from live data (spikes 02 and
+# 04, covering 1997 through 2026) and are reliable. Franchise NAMES are not in
+# the API and were filled in by hand; those marked verified: false should be
+# checked against a reference before being surfaced in a history view.
+#
+# Colors are deliberately absent. The chart palette is generated deterministically
+# from the franchise slug so every team, including one that debuts tomorrow, gets
+# a distinct accessible color with no manual step. Real brand colors can be added
+# later as explicit overrides once sourced from official assets.
+
+version: 2
+
+franchises:
+
+  - team_id: 1611661313
+    slug: new-york-liberty
+    identities:
+      - { abbreviation: NYL, name: New York Liberty, city: New York, first_season: 1997, last_season: null }
+
+  - team_id: 1611661317
+    slug: phoenix-mercury
+    identities:
+      # Same franchise throughout. The abbreviation changed at the provider, not
+      # in the world. This is the registry's reference example for a rename.
+      - { abbreviation: PHO, name: Phoenix Mercury, city: Phoenix, first_season: 1997, last_season: 2024 }
+      - { abbreviation: PHX, name: Phoenix Mercury, city: Phoenix, first_season: 2025, last_season: null }
+
+  - team_id: 1611661319
+    slug: las-vegas-aces
+    identities:
+      # Abbreviations and spans confirmed from data: UTA 1997-2002, SAN
+      # 2003-2017, LVA 2018-. The provider used SAN for the whole San Antonio
+      # run even though the team was branded Silver Stars until 2013.
+      - { abbreviation: UTA, name: Utah Starzz, city: Salt Lake City, first_season: 1997, last_season: 2002 }
+      - { abbreviation: SAN, name: San Antonio Silver Stars, city: San Antonio, first_season: 2003, last_season: 2013, verified: false }
+      - { abbreviation: SAN, name: San Antonio Stars, city: San Antonio, first_season: 2014, last_season: 2017, verified: false }
+      - { abbreviation: LVA, name: Las Vegas Aces, city: Las Vegas, first_season: 2018, last_season: null }
+
+  - team_id: 1611661320
+    slug: los-angeles-sparks
+    identities:
+      - { abbreviation: LAS, name: Los Angeles Sparks, city: Los Angeles, first_season: 1997, last_season: null }
+
+  - team_id: 1611661321
+    slug: dallas-wings
+    identities:
+      # Confirmed from data: DET 1998-2009, TUL 2010-2015, DAL 2016-.
+      - { abbreviation: DET, name: Detroit Shock, city: Detroit, first_season: 1998, last_season: 2009 }
+      - { abbreviation: TUL, name: Tulsa Shock, city: Tulsa, first_season: 2010, last_season: 2015 }
+      - { abbreviation: DAL, name: Dallas Wings, city: Dallas, first_season: 2016, last_season: null }
+
+  - team_id: 1611661322
+    slug: washington-mystics
+    identities:
+      - { abbreviation: WAS, name: Washington Mystics, city: Washington, first_season: 1998, last_season: null }
+
+  - team_id: 1611661323
+    slug: connecticut-sun
+    identities:
+      # Confirmed from data: ORL 1999-2002, CON 2003-.
+      - { abbreviation: ORL, name: Orlando Miracle, city: Orlando, first_season: 1999, last_season: 2002 }
+      - { abbreviation: CON, name: Connecticut Sun, city: Uncasville, first_season: 2003, last_season: 2026 }
+      # PENDING 2027. The WNBA approved the sale to the Fertitta family in May
+      # 2026; the franchise relocates to Houston as the Comets for 2027. The
+      # abbreviation is a guess and MUST be confirmed once the season opens.
+      #
+      # Note this is a RELOCATION, not a revival: the same franchise moves and
+      # rebrands, so it stays in this era with no lineage_break. The original
+      # Houston Comets are a separate, defunct franchise below, and their four
+      # championships do not transfer here.
+      - { abbreviation: HOU, name: Houston Comets, city: Houston, first_season: 2027, last_season: null, verified: false }
+
+  - team_id: 1611661324
+    slug: minnesota-lynx
+    identities:
+      - { abbreviation: MIN, name: Minnesota Lynx, city: Minneapolis, first_season: 1999, last_season: null }
+
+  - team_id: 1611661325
+    slug: indiana-fever
+    identities:
+      - { abbreviation: IND, name: Indiana Fever, city: Indianapolis, first_season: 2000, last_season: null }
+
+  - team_id: 1611661327
+    slug: portland-fire
+    identities:
+      # CONFIRMED by spike 04. This TEAM_ID appeared as POR in 2000, 2001 and
+      # 2002, and reappears as PDX in 2026 after a 23-season absence.
+      #
+      # These are NOT the same franchise. The original Fire folded after 2002;
+      # the 2026 Fire is an expansion team that readopted the name. The provider
+      # reused the identifier anyway. lineage_break is what stops any chart from
+      # drawing a line across that gap.
+      - { abbreviation: POR, name: Portland Fire, city: Portland, first_season: 2000, last_season: 2002 }
+      - { abbreviation: PDX, name: Portland Fire, city: Portland, first_season: 2026, last_season: null, lineage_break: true }
+
+  - team_id: 1611661328
+    slug: seattle-storm
+    identities:
+      - { abbreviation: SEA, name: Seattle Storm, city: Seattle, first_season: 2000, last_season: null }
+
+  - team_id: 1611661329
+    slug: chicago-sky
+    identities:
+      - { abbreviation: CHI, name: Chicago Sky, city: Chicago, first_season: 2006, last_season: null }
+
+  - team_id: 1611661330
+    slug: atlanta-dream
+    identities:
+      - { abbreviation: ATL, name: Atlanta Dream, city: Atlanta, first_season: 2008, last_season: null }
+
+  - team_id: 1611661331
+    slug: golden-state-valkyries
+    identities:
+      - { abbreviation: GSV, name: Golden State Valkyries, city: San Francisco, first_season: 2025, last_season: null }
+
+  - team_id: 1611661332
+    slug: toronto-tempo
+    identities:
+      # A brand-new name got a brand-new identifier, above the previous maximum.
+      # Portland, reviving a defunct name, got the defunct franchise's old ID.
+      # That asymmetry is what exposed the reuse behaviour.
+      - { abbreviation: TOR, name: Toronto Tempo, city: Toronto, first_season: 2026, last_season: null }
+
+# Franchises that folded and have no live successor identifier.
+#
+# Season spans are confirmed from data (spikes 02 and 04). TEAM_IDs are not yet
+# captured, since the spikes recorded abbreviations rather than the full ID map
+# for defunct teams. Fill them in before building any franchise history view,
+# and watch for the Portland pattern: a folded franchise's ID can come back.
+defunct:
+  - slug: houston-comets-original
+    team_id: null
+    name: Houston Comets
+    city: Houston
+    abbreviation: HOU
+    first_season: 1997
+    last_season: 2008
+    note: >
+      Won the league's first four championships. Distinct from the 2027 Houston
+      Comets, which is the relocated Connecticut franchise wearing a revived
+      brand. The titles do not transfer, and any history view must present the
+      two separately.
+
+  - slug: charlotte-sting
+    team_id: null
+    name: Charlotte Sting
+    city: Charlotte
+    abbreviation: CHA
+    first_season: 1997
+    last_season: 2006
+
+  - slug: cleveland-rockers
+    team_id: null
+    name: Cleveland Rockers
+    city: Cleveland
+    abbreviation: CLE
+    first_season: 1997
+    last_season: 2003
+    note: >
+      Unrelated to the Cleveland expansion franchise scheduled to begin play in
+      2028. If the provider reuses this ID the way it reused Portland's, the new
+      team needs a lineage_break.
+
+  - slug: sacramento-monarchs
+    team_id: null
+    name: Sacramento Monarchs
+    city: Sacramento
+    abbreviation: SAC
+    first_season: 1997
+    last_season: 2009
+
+  - slug: miami-sol
+    team_id: null
+    name: Miami Sol
+    city: Miami
+    abbreviation: MIA
+    first_season: 2000
+    last_season: 2002

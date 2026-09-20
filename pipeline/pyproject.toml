@@ -1,0 +1,44 @@
+[project]
+name = "courtvision"
+version = "0.1.0"
+description = "WNBA analytics pipeline: ingests league data and builds the static artifacts the Court Vision frontend renders."
+requires-python = ">=3.11"
+dependencies = [
+    "nba-api>=1.11",
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "pydantic>=2.7",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+
+[project.scripts]
+courtvision = "courtvision.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["courtvision*"]
+
+[tool.setuptools.package-data]
+# The franchise registry ships with the package; without this it is missing
+# from an installed build and the resolver fails only in production.
+courtvision = ["data/*.yaml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

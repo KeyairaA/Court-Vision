@@ -1,0 +1,93 @@
+# Court Vision spike 03: can a GitHub Actions runner reach the stats API?
+#
+# THE QUESTION
+# ------------
+# The scheduled refresh design assumes GitHub Actions can call nba_api. That is
+# not obvious. Direct requests to the stats endpoint already failed during
+# development, and CI runners live on datacenter IP ranges that get treated more
+# suspiciously than a home connection.
+#
+# If this fails, the architecture does not change, but the scheduler does. The
+# fallbacks in order of preference are an external trigger such as a Cloudflare
+# Worker, a self-hosted runner on a residential connection, or a locally run
+# refresh that pushes artifacts.
+#
+# Note: nba_api sends WNBA requests to stats.nba.com with LeagueID=10, NOT to
+# stats.wnba.com. stats.nba.com is the host that has to be reachable.
+#
+# HOW TO RUN
+# ----------
+# Commit this file, then trigger it by hand from the Actions tab. Do not wait
+# for a schedule; the whole point is a fast answer.
+
+name: Spike - CI reachability
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install nba_api
+        run: pip install nba_api pandas
+
+      - name: Report runner egress IP
+        run: |
+          echo "Runner public IP:"
+          curl -s --max-time 10 https://api.ipify.org || echo "(could not determine)"
+          echo
+
+      - name: Probe the stats host directly
+        continue-on-error: true
+        run: |
+          echo "Raw connectivity check to stats.nba.com:"
+          curl -s -o /dev/null -w "HTTP %{http_code} in %{time_total}s\n" \
+            --max-time 30 \
+            -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+            -H "Referer: https://www.wnba.com/" \
+            -H "x-nba-stats-origin: stats" \
+            -H "x-nba-stats-token: true" \
+            "https://stats.nba.com/stats/leaguedashplayerstats?LeagueID=10&Season=2024-25&SeasonType=Regular+Season&PerMode=PerGame&MeasureType=Base&LastNGames=0&Month=0&OpponentTeamID=0&PaceAdjust=N&Period=0&PlusMinus=N&Rank=N" \
+            || echo "curl failed or timed out"
+
+      - name: Probe through nba_api
+        run: |
+          python - <<'PY'
+          import sys, time
+          from nba_api.stats.endpoints import leaguedashplayerstats
+
+          t0 = time.time()
+          try:
+              endpoint = leaguedashplayerstats.LeagueDashPlayerStats(
+                  league_id_nullable="10",
+                  season="2024-25",
+                  season_type_all_star="Regular Season",
+                  per_mode_detailed="PerGame",
+                  timeout=60,
+              )
+              df = endpoint.get_data_frames()[0]
+              print(f"SUCCESS in {time.time() - t0:.1f}s")
+              print(f"rows={len(df)} cols={len(df.columns)}")
+              print("teams:", sorted(df["TEAM_ABBREVIATION"].dropna().unique().tolist()))
+              print()
+              print("VERDICT: GitHub Actions can reach the stats API.")
+              print("Proceed with the scheduled refresh on Actions.")
+          except Exception as exc:
+              print(f"FAILED after {time.time() - t0:.1f}s")
+              print(f"{type(exc).__name__}: {exc}")
+              print()
+              print("VERDICT: GitHub Actions cannot reach the stats API.")
+              print("Move the schedule to an external trigger or a self-hosted runner.")
+              sys.exit(1)
+          PY
