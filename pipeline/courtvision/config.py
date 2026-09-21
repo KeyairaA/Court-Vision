@@ -84,6 +84,8 @@ low-usage bench players do not distort the rate distributions."""
 PIPELINE_ROOT = Path(__file__).resolve().parent.parent
 REPO_ROOT = PIPELINE_ROOT.parent
 ARTIFACT_DIR = REPO_ROOT / "data" / "v1"
+CACHE_DIR = PIPELINE_ROOT / ".cache" / "mirror"
+"""Downloaded source files. Gitignored; safe to delete at any time."""
 SCHEMA_DIR = REPO_ROOT / "schemas"
 FRANCHISE_REGISTRY = PIPELINE_ROOT / "data" / "franchises.yaml"
 

@@ -171,8 +171,7 @@ class ResolutionReport:
         lines = []
         for team_id, abbr in sorted(self.unknown_team_ids.items()):
             lines.append(
-                f"Unknown franchise: TEAM_ID {team_id} (seen as {abbr}). "
-                f"Add it to franchises.yaml."
+                f"Unknown franchise: TEAM_ID {team_id} (seen as {abbr}). Add it to franchises.yaml."
             )
         for team_id, season, expected, observed in self.abbreviation_drift:
             lines.append(
@@ -199,9 +198,7 @@ class FranchiseRegistry:
     # -- construction -------------------------------------------------------
 
     @classmethod
-    def load(
-        cls, path: Path | None = None, strict: bool = False
-    ) -> FranchiseRegistry:
+    def load(cls, path: Path | None = None, strict: bool = False) -> FranchiseRegistry:
         path = path or DEFAULT_REGISTRY_PATH
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
 
@@ -263,9 +260,7 @@ class FranchiseRegistry:
 
     # -- resolution ---------------------------------------------------------
 
-    def resolve(
-        self, team_id: int, season: int, observed_abbreviation: str
-    ) -> Franchise:
+    def resolve(self, team_id: int, season: int, observed_abbreviation: str) -> Franchise:
         """Resolve a data row's team to a franchise.
 
         An unknown team ID yields a provisional franchise rather than an error,

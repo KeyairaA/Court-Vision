@@ -35,7 +35,6 @@ def load_data():
         df = df[['Year', 'Season_type', 'PLAYER_ID', 'PLAYER', 'TEAM', 'GP', 'MIN',
                  'FGM', 'FGA', 'FG_PCT', 'FG3M', 'FG3A', 'FG3_PCT', 'FTM', 'FTA',
                  'FT_PCT', 'OREB', 'DREB', 'REB', 'AST', 'STL', 'BLK', 'TOV', 'PTS']]
-        df['TEAM'] = df['TEAM'].replace('SAN', 'LVA')
         all_seasons.append(df)
 
     return pd.concat(all_seasons, ignore_index=True)

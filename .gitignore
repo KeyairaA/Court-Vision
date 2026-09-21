@@ -37,3 +37,8 @@ dist/
 # Local env files
 .env
 .env.local
+
+# Pipeline download cache and atomic-write staging
+pipeline/.cache/
+data/*.staging/
+data/*.previous/

@@ -95,9 +95,7 @@ def fetch_season(
             )
             frames = endpoint.get_data_frames()
             if not frames:
-                raise StatsUnavailable(
-                    f"Season {season_year} returned no result sets at all."
-                )
+                raise StatsUnavailable(f"Season {season_year} returned no result sets at all.")
 
             frame = frames[0]
             if frame.empty:
@@ -108,9 +106,7 @@ def fetch_season(
                 )
 
             elapsed = time.monotonic() - started
-            logger.info(
-                "Season %s returned %d rows in %.1fs", season_year, len(frame), elapsed
-            )
+            logger.info("Season %s returned %d rows in %.1fs", season_year, len(frame), elapsed)
             return SeasonPull(
                 season_year=season_year,
                 season_string=season_str,

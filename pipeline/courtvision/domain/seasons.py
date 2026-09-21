@@ -24,12 +24,12 @@ confidence it has not earned.
 from __future__ import annotations
 
 import re
-from enum import Enum
+from enum import StrEnum
 
 SEASON_STRING_PATTERN = re.compile(r"^(\d{4})-(\d{2})$")
 
 
-class SeasonAnchor(str, Enum):
+class SeasonAnchor(StrEnum):
     """Which half of a 'YYYY-YY' string names the actual WNBA season."""
 
     LEADING = "leading"
@@ -77,11 +77,7 @@ def season_string(year: int) -> str:
     if year < 1997:
         raise ValueError(f"The WNBA did not exist in {year}; first season was 1997.")
 
-    if SEASON_STRING_ANCHOR is SeasonAnchor.LEADING:
-        lead = year
-    else:
-        lead = year - 1
-
+    lead = year if SEASON_STRING_ANCHOR is SeasonAnchor.LEADING else year - 1
     return f"{lead}-{str(lead + 1)[-2:]}"
 
 

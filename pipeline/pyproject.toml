@@ -5,6 +5,8 @@ description = "WNBA analytics pipeline: ingests league data and builds the stati
 requires-python = ">=3.11"
 dependencies = [
     "nba-api>=1.11",
+    "requests>=2.31",
+    "pyarrow>=15.0",
     "pandas>=2.2",
     "numpy>=1.26",
     "pydantic>=2.7",

@@ -149,6 +149,7 @@ class TestLineageBreaks:
         assert not phoenix.has_discontinuous_history
         assert phoenix.crosses_lineage_break(2024, 2025) is False
 
+
 class TestPortlandConfirmed:
     """Spike 04 confirmed the reuse against live data on Sep 20, 2026.
 
