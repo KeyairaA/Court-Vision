@@ -1,0 +1,425 @@
+{
+  "$defs": {
+    "AbbreviationDrift": {
+      "additionalProperties": false,
+      "properties": {
+        "observed": {
+          "type": "string"
+        },
+        "registry": {
+          "type": "string"
+        },
+        "season": {
+          "type": "integer"
+        },
+        "team_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "team_id",
+        "season",
+        "registry",
+        "observed"
+      ],
+      "title": "AbbreviationDrift",
+      "type": "object"
+    },
+    "ArtifactEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "title": "ArtifactEntry",
+      "type": "object"
+    },
+    "Counts": {
+      "additionalProperties": false,
+      "properties": {
+        "per_season": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "player_seasons": {
+          "type": "integer"
+        },
+        "players": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "player_seasons",
+        "players",
+        "per_season"
+      ],
+      "title": "Counts",
+      "type": "object"
+    },
+    "FranchiseReport": {
+      "additionalProperties": false,
+      "properties": {
+        "abbreviation_drift": {
+          "items": {
+            "$ref": "#/$defs/AbbreviationDrift"
+          },
+          "type": "array"
+        },
+        "clean": {
+          "type": "boolean"
+        },
+        "unknown_team_ids": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "clean",
+        "unknown_team_ids",
+        "abbreviation_drift"
+      ],
+      "title": "FranchiseReport",
+      "type": "object"
+    },
+    "Methodology": {
+      "additionalProperties": false,
+      "properties": {
+        "careers": {
+          "type": "string"
+        },
+        "league_averages": {
+          "type": "string"
+        },
+        "per_minutes_base": {
+          "type": "integer"
+        },
+        "season_labels_verified": {
+          "type": "boolean"
+        },
+        "true_shooting_ft_coefficient": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "true_shooting_ft_coefficient",
+        "per_minutes_base",
+        "season_labels_verified",
+        "league_averages",
+        "careers"
+      ],
+      "title": "Methodology",
+      "type": "object"
+    },
+    "SeasonQuality": {
+      "additionalProperties": false,
+      "properties": {
+        "complete": {
+          "type": "boolean"
+        },
+        "coverage": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "fill_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "filled_games": {
+          "type": "integer"
+        },
+        "forfeits": {
+          "type": "integer"
+        },
+        "games_covered": {
+          "type": "integer"
+        },
+        "games_played": {
+          "type": "integer"
+        },
+        "last_covered_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_played_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "missing_games": {
+          "type": "integer"
+        },
+        "team_games_reconciled": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "games_played",
+        "games_covered",
+        "coverage",
+        "complete",
+        "missing_games",
+        "forfeits",
+        "last_covered_date",
+        "last_played_date",
+        "team_games_reconciled",
+        "filled_games",
+        "fill_source"
+      ],
+      "title": "SeasonQuality",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "items": {
+            "$ref": "#/$defs/SourceFile"
+          },
+          "type": "array"
+        },
+        "homepage": {
+          "type": "string"
+        },
+        "latest_published_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "homepage",
+        "latest_published_at",
+        "files"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "SourceFile": {
+      "additionalProperties": false,
+      "properties": {
+        "etag": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fill_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "filled_games": {
+          "type": "integer"
+        },
+        "last_modified": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rows": {
+          "type": "integer"
+        },
+        "season": {
+          "type": "integer"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "season",
+        "url",
+        "last_modified",
+        "etag",
+        "sha256",
+        "rows",
+        "filled_games",
+        "fill_source"
+      ],
+      "title": "SourceFile",
+      "type": "object"
+    },
+    "Window": {
+      "additionalProperties": false,
+      "properties": {
+        "first": {
+          "type": "integer"
+        },
+        "last": {
+          "type": "integer"
+        },
+        "seasons": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "first",
+        "last",
+        "seasons"
+      ],
+      "title": "Window",
+      "type": "object"
+    }
+  },
+  "$id": "https://court-vision/schemas/1.0.0/manifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Provenance and methodology. The frontend reads this first.",
+  "properties": {
+    "artifacts": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/ArtifactEntry"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Present in the written file; absent before writing."
+    },
+    "confounded_seasons": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "content_fingerprint": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Hash of the data artifacts. Unchanged data, unchanged fingerprint."
+    },
+    "counts": {
+      "$ref": "#/$defs/Counts"
+    },
+    "franchise_report": {
+      "$ref": "#/$defs/FranchiseReport"
+    },
+    "generated_at": {
+      "description": "When the build ran.",
+      "type": "string"
+    },
+    "label_changes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "type": "object"
+    },
+    "methodology": {
+      "$ref": "#/$defs/Methodology"
+    },
+    "partial_seasons": {
+      "items": {
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "quality": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SeasonQuality"
+      },
+      "type": "object"
+    },
+    "schema_version": {
+      "type": "string"
+    },
+    "season_type": {
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/Source"
+    },
+    "window": {
+      "$ref": "#/$defs/Window"
+    }
+  },
+  "required": [
+    "schema_version",
+    "generated_at",
+    "source",
+    "window",
+    "season_type",
+    "methodology",
+    "confounded_seasons",
+    "label_changes",
+    "franchise_report",
+    "quality",
+    "partial_seasons",
+    "counts"
+  ],
+  "title": "Manifest",
+  "type": "object"
+}

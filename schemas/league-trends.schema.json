@@ -1,0 +1,176 @@
+{
+  "$defs": {
+    "LeagueSeasonRecord": {
+      "additionalProperties": false,
+      "description": "League-wide totals per team-game, computed from team rows.",
+      "properties": {
+        "ast_per_team_game": {
+          "type": "number"
+        },
+        "confound": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Structural caveat for this season, if any."
+        },
+        "efg_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg3_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg3a_per_team_game": {
+          "type": "number"
+        },
+        "fg3a_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ft_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fta_per_team_game": {
+          "type": "number"
+        },
+        "ftr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "games": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "games_per_team": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "label_change": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "A team label that changes this season."
+        },
+        "players": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pts_per_team_game": {
+          "type": "number"
+        },
+        "reb_per_team_game": {
+          "type": "number"
+        },
+        "season": {
+          "type": "integer"
+        },
+        "teams": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "tov_per_team_game": {
+          "type": "number"
+        },
+        "ts_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "season",
+        "teams",
+        "players",
+        "games",
+        "games_per_team",
+        "pts_per_team_game",
+        "reb_per_team_game",
+        "ast_per_team_game",
+        "tov_per_team_game",
+        "fg3a_per_team_game",
+        "fta_per_team_game",
+        "fg_pct",
+        "fg3_pct",
+        "ft_pct",
+        "ts_pct",
+        "efg_pct",
+        "fg3a_rate",
+        "ftr",
+        "confound",
+        "label_change"
+      ],
+      "title": "LeagueSeasonRecord",
+      "type": "object"
+    }
+  },
+  "$id": "https://court-vision/schemas/1.0.0/league-trends.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "items": {
+    "$ref": "#/$defs/LeagueSeasonRecord"
+  },
+  "title": "LeagueTrends",
+  "type": "array"
+}

@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "noUnusedLocals": false,
+    "skipLibCheck": true
+  },
+  "include": ["typescript/*.ts"]
+}

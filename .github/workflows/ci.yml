@@ -1,0 +1,91 @@
+# Court Vision CI
+#
+# Runs on every push and pull request. Two jobs, one per half of the contract:
+#
+#   pipeline   lint, tests, and the Python side of the contract: the committed
+#              JSON Schemas must match the artifact models, and the committed
+#              data must satisfy those schemas (hashes included).
+#
+#   types      the TypeScript side: regenerating types from the committed
+#              schemas must reproduce the committed file exactly, and the
+#              compile-time assertions must hold.
+#
+# Together they make it impossible to merge a change that renames or retypes a
+# field on one side of the Python/TypeScript boundary but not the other.
+#
+# Actions are pinned by commit SHA, not tag, so a compromised or moved tag
+# cannot change what runs here. The trailing comment records the version.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pipeline:
+    name: Pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: pipeline/uv.lock
+
+      - name: Install locked dependencies
+        run: uv sync --frozen --extra dev
+
+      - name: Lint
+        run: |
+          uv run --frozen ruff check courtvision tests
+          uv run --frozen ruff format --check courtvision tests
+
+      - name: Tests
+        run: uv run --frozen python -m pytest -q
+
+      - name: Schemas match the artifact models
+        run: uv run --frozen courtvision schemas --check
+
+      - name: Published data satisfies the contract
+        run: uv run --frozen courtvision validate
+
+  types:
+    name: TypeScript contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: schemas/package-lock.json
+
+      - name: Install locked tooling
+        run: npm ci --prefix schemas
+
+      - name: Types are up to date with the schemas
+        run: |
+          npm run generate --prefix schemas
+          if ! git diff --exit-code -- schemas/typescript; then
+            echo "::error::schemas/typescript is stale. Run 'npm run generate --prefix schemas' and commit."
+            exit 1
+          fi
+
+      - name: Compile-time contract assertions
+        run: npm run check --prefix schemas

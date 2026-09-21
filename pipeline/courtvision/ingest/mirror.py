@@ -162,6 +162,22 @@ def _download(url: str, session: requests.Session) -> requests.Response:
     ) from last_error
 
 
+def season_published(season: int, session: requests.Session | None = None) -> bool:
+    """True if the mirror has a game-log file for `season`. Never raises.
+
+    Used to notice a new season appearing, which the explicit window will not
+    pick up on its own. A network problem answers False rather than failing a
+    build that has otherwise succeeded.
+    """
+    try:
+        response = (session or requests.Session()).head(
+            season_url(season), timeout=config.REQUEST_TIMEOUT_SECONDS, allow_redirects=True
+        )
+        return response.status_code == 200
+    except requests.RequestException:
+        return False
+
+
 def validate_frame(frame: pd.DataFrame, season: int) -> None:
     missing = REQUIRED_COLUMNS - set(frame.columns)
     if missing:

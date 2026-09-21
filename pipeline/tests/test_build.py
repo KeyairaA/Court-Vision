@@ -216,7 +216,7 @@ class TestAtomicWrite:
     def test_writes_every_file_and_indexes_them(self, tmp_path):
         result = build_artifacts(two_seasons(), FranchiseRegistry.load(), now=NOW)
         out = tmp_path / "v1"
-        index = write_artifacts(result, out)
+        index = write_artifacts(result, out).index
         assert {p.name for p in out.iterdir()} == {f"{n}.json" for n in result.artifacts}
         manifest = json.loads((out / "manifest.json").read_text())
         assert manifest["artifacts"] == index

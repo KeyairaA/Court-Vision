@@ -1,0 +1,80 @@
+{
+  "$defs": {
+    "FranchiseIdentityRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "abbreviation": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "first_season": {
+          "type": "integer"
+        },
+        "last_season": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "abbreviation",
+        "name",
+        "city",
+        "first_season",
+        "last_season",
+        "verified"
+      ],
+      "title": "FranchiseIdentityRecord",
+      "type": "object"
+    },
+    "FranchiseRecord": {
+      "additionalProperties": false,
+      "description": "A provider identity. `eras` separates unrelated franchises sharing an ID.",
+      "properties": {
+        "eras": {
+          "description": "Continuous eras. Never connect history across two eras.",
+          "items": {
+            "items": {
+              "$ref": "#/$defs/FranchiseIdentityRecord"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "team_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "team_id",
+        "slug",
+        "eras"
+      ],
+      "title": "FranchiseRecord",
+      "type": "object"
+    }
+  },
+  "$id": "https://court-vision/schemas/1.0.0/franchises.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "items": {
+    "$ref": "#/$defs/FranchiseRecord"
+  },
+  "title": "Franchises",
+  "type": "array"
+}

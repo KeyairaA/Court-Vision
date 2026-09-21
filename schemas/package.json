@@ -1,0 +1,14 @@
+{
+  "name": "court-vision-schemas",
+  "private": true,
+  "description": "Generates TypeScript types from the artifact JSON Schemas. The schemas themselves are generated from pipeline/courtvision/artifacts/models.py.",
+  "type": "module",
+  "scripts": {
+    "generate": "node generate.mjs",
+    "check": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "16.0.0",
+    "typescript": "7.0.2"
+  }
+}

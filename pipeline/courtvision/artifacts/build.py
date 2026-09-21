@@ -37,8 +37,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
+from pydantic import ValidationError
 
 from courtvision import config
+from courtvision.artifacts.models import validate_artifact
 from courtvision.domain.franchise import FranchiseRegistry
 from courtvision.domain.schema import SEASON_TYPE_REGULAR, PlayerSeason
 from courtvision.domain.seasons import SEASON_MAPPING_VERIFIED
@@ -382,8 +384,13 @@ def build_artifacts(
         "franchises": franchises,
     }
 
-    # Final guard: every artifact must serialize without NaN or Infinity.
+    # Every artifact must satisfy its published contract (artifacts/models.py)
+    # and serialize without NaN or Infinity. Either failure stops the build.
     for name, payload in artifacts.items():
+        try:
+            validate_artifact(name, payload)
+        except ValidationError as exc:
+            raise BuildFailed(f"Artifact {name!r} violates its schema:\n{exc}") from exc
         try:
             json.dumps(payload, allow_nan=False)
         except ValueError as exc:
@@ -398,31 +405,99 @@ def _serialize(payload: object) -> bytes:
     )
 
 
-def write_artifacts(result: BuildResult, out_dir: Path) -> dict[str, dict]:
-    """Write atomically: stage everything, then swap the directory in."""
-    out_dir = Path(out_dir)
-    staging = out_dir.with_name(out_dir.name + ".staging")
-    previous = out_dir.with_name(out_dir.name + ".previous")
+FINGERPRINT_MANIFEST_KEYS: tuple[str, ...] = (
+    "schema_version",
+    "window",
+    "methodology",
+    "confounded_seasons",
+    "label_changes",
+    "quality",
+    "partial_seasons",
+    "franchise_report",
+)
+"""Manifest fields that describe the data rather than the run.
 
-    for path in (staging, previous):
-        if path.exists():
-            shutil.rmtree(path)
-    staging.mkdir(parents=True)
+`generated_at` changes on every build and `source.files` carries per-download
+headers, so neither belongs in the fingerprint. If the mirror republishes
+byte-identical data, nothing a reader sees has changed, so nothing is committed.
+"""
 
+
+@dataclass
+class WriteOutcome:
+    written: bool
+    fingerprint: str
+    index: dict[str, dict]
+
+
+def _prepare(result: BuildResult) -> tuple[dict[str, bytes], dict[str, dict], str]:
+    payloads: dict[str, bytes] = {}
     index: dict[str, dict] = {}
     for name, payload in result.artifacts.items():
         if name == "manifest":
             continue
         data = _serialize(payload)
-        (staging / f"{name}.json").write_bytes(data)
+        payloads[name] = data
         index[name] = {
             "path": f"{name}.json",
             "bytes": len(data),
             "sha256": hashlib.sha256(data).hexdigest(),
         }
 
+    manifest = result.artifacts["manifest"]
+    basis = {
+        "artifacts": {name: entry["sha256"] for name, entry in sorted(index.items())},
+        **{key: manifest[key] for key in FINGERPRINT_MANIFEST_KEYS},
+    }
+    fingerprint = hashlib.sha256(_serialize(basis)).hexdigest()
+    return payloads, index, fingerprint
+
+
+def existing_fingerprint(out_dir: Path) -> str | None:
+    path = Path(out_dir) / "manifest.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("content_fingerprint")
+    except (OSError, ValueError):
+        return None
+
+
+def write_artifacts(
+    result: BuildResult,
+    out_dir: Path,
+    skip_if_unchanged: bool = False,
+) -> WriteOutcome:
+    """Write atomically: stage everything, then swap the directory in.
+
+    With skip_if_unchanged, a build whose content fingerprint matches the
+    published one writes nothing, so a scheduled refresh does not commit a new
+    timestamp every day when the data has not moved.
+    """
+    out_dir = Path(out_dir)
+    payloads, index, fingerprint = _prepare(result)
+
+    if skip_if_unchanged and existing_fingerprint(out_dir) == fingerprint:
+        logger.info("Content unchanged (fingerprint %s); nothing written.", fingerprint[:12])
+        return WriteOutcome(written=False, fingerprint=fingerprint, index=index)
+
     manifest = dict(result.artifacts["manifest"])
+    manifest["content_fingerprint"] = fingerprint
     manifest["artifacts"] = index
+    try:
+        validate_artifact("manifest", manifest)
+    except ValidationError as exc:
+        raise BuildFailed(f"Final manifest violates its schema:\n{exc}") from exc
+
+    staging = out_dir.with_name(out_dir.name + ".staging")
+    previous = out_dir.with_name(out_dir.name + ".previous")
+    for path in (staging, previous):
+        if path.exists():
+            shutil.rmtree(path)
+    staging.mkdir(parents=True)
+
+    for name, data in payloads.items():
+        (staging / f"{name}.json").write_bytes(data)
     (staging / "manifest.json").write_bytes(_serialize(manifest))
 
     if out_dir.exists():
@@ -432,4 +507,4 @@ def write_artifacts(result: BuildResult, out_dir: Path) -> dict[str, dict]:
         shutil.rmtree(previous)
 
     logger.info("Wrote %d artifacts to %s", len(index) + 1, out_dir)
-    return index
+    return WriteOutcome(written=True, fingerprint=fingerprint, index=index)

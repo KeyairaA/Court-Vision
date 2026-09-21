@@ -1,0 +1,102 @@
+# Court Vision scheduled data refresh
+#
+# Rebuilds data/v1 from the sportsdataverse mirror and commits it only if the
+# data actually changed. The site redeploys from that commit.
+#
+# WHY THIS CAN RUN HERE
+#   stats.nba.com blackholes datacenter traffic, so a GitHub runner cannot call
+#   it (spike 03). The mirror is served from GitHub releases, which it can.
+#
+# CADENCE
+#   Daily at 10:17 UTC from May through October, covering the regular season
+#   and playoffs. The mirror publishes around 08:00 UTC, so this runs after it.
+#   Weekly on Mondays the rest of the year, when nothing changes.
+#
+# SAFETY
+#   The full test suite runs before any build, so a broken pipeline cannot
+#   publish. The build itself is all-or-nothing: a failure at any stage leaves
+#   the committed data untouched and fails this run, which notifies the repo
+#   owner. The content fingerprint means a run that finds no new data commits
+#   nothing, instead of a new timestamp every day.
+#
+# KEEPALIVE
+#   GitHub disables scheduled workflows after 60 days without repository
+#   activity. In the off-season this workflow commits nothing for months, so it
+#   would switch itself off. The keepalive job re-enables it through the API on
+#   each scheduled run, without creating dummy commits.
+#
+# REQUIREMENTS
+#   Settings > Actions > General > Workflow permissions must allow read and
+#   write, or the push step is refused. If main is protected against direct
+#   pushes, this job needs a bypass or must be switched to opening a PR.
+
+name: Refresh data
+
+on:
+  schedule:
+    - cron: "17 10 * 5-10 *"
+    - cron: "17 10 * 1-4,11,12 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Rebuild and publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: pipeline/uv.lock
+
+      - name: Install locked dependencies
+        working-directory: pipeline
+        run: uv sync --frozen --extra dev
+
+      - name: Tests must pass before anything is published
+        working-directory: pipeline
+        run: uv run --frozen python -m pytest -q
+
+      - name: Build
+        working-directory: pipeline
+        run: uv run --frozen courtvision build --no-cache --skip-if-unchanged
+
+      - name: Validate what will be published
+        working-directory: pipeline
+        run: uv run --frozen courtvision validate
+
+      - name: Report
+        if: always()
+        working-directory: pipeline
+        run: uv run --frozen courtvision summary >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Commit if the data changed
+        run: |
+          if git diff --quiet -- data/v1; then
+            echo "No data changes; nothing to commit."
+            exit 0
+          fi
+          fingerprint=$(python3 -c "import json;print(json.load(open('data/v1/manifest.json'))['content_fingerprint'][:12])")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/v1
+          git commit -m "data: refresh $(date -u +%Y-%m-%d) (${fingerprint})"
+          git push
+
+  keepalive:
+    name: Keep schedule enabled
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@f72ff1a1336129f29bf0166c0fd0ca6cf1bcb38c # v1

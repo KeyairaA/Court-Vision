@@ -1,0 +1,323 @@
+{
+  "$defs": {
+    "PlayerSeasonRecord": {
+      "additionalProperties": false,
+      "description": "One player's regular season. Totals, per-game, per-36 and rates.",
+      "properties": {
+        "ast": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "ast_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ast_pg": {
+          "type": "number"
+        },
+        "ast_to": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blk": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "blk_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blk_pg": {
+          "type": "number"
+        },
+        "dreb": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "efg_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg3_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg3a": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "fg3a_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg3m": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "fg_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fga": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "fgm": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "franchise_slug": {
+          "description": "Stable franchise key; use this to group.",
+          "type": "string"
+        },
+        "ft_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fta": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "ftm": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "ftr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gp": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "is_multi_team": {
+          "type": "boolean"
+        },
+        "min": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "min_pg": {
+          "type": "number"
+        },
+        "oreb": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "player_id": {
+          "type": "integer"
+        },
+        "player_name": {
+          "type": "string"
+        },
+        "pts": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pts_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pts_pg": {
+          "type": "number"
+        },
+        "reb": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "reb_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reb_pg": {
+          "type": "number"
+        },
+        "season": {
+          "minimum": 1997,
+          "type": "integer"
+        },
+        "stl": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "stl_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stl_pg": {
+          "type": "number"
+        },
+        "team_abbreviation": {
+          "description": "Label current in this season, e.g. PHO in 2024.",
+          "type": "string"
+        },
+        "team_id": {
+          "description": "Provider team identity. Primary team if traded.",
+          "type": "integer"
+        },
+        "teams": {
+          "description": "Every team played for, in order.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "tov": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "tov_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tov_pg": {
+          "type": "number"
+        },
+        "ts_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "season",
+        "player_id",
+        "player_name",
+        "team_id",
+        "team_abbreviation",
+        "franchise_slug",
+        "is_multi_team",
+        "teams",
+        "gp",
+        "min",
+        "pts",
+        "reb",
+        "oreb",
+        "dreb",
+        "ast",
+        "stl",
+        "blk",
+        "tov",
+        "fgm",
+        "fga",
+        "fg3m",
+        "fg3a",
+        "ftm",
+        "fta",
+        "fg_pct",
+        "fg3_pct",
+        "ft_pct",
+        "ts_pct",
+        "efg_pct",
+        "fg3a_rate",
+        "ftr",
+        "ast_to",
+        "min_pg",
+        "pts_pg",
+        "reb_pg",
+        "ast_pg",
+        "stl_pg",
+        "blk_pg",
+        "tov_pg",
+        "pts_per36",
+        "reb_per36",
+        "ast_per36",
+        "stl_per36",
+        "blk_per36",
+        "tov_per36"
+      ],
+      "title": "PlayerSeasonRecord",
+      "type": "object"
+    }
+  },
+  "$id": "https://court-vision/schemas/1.0.0/player-seasons.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "items": {
+    "$ref": "#/$defs/PlayerSeasonRecord"
+  },
+  "title": "PlayerSeasons",
+  "type": "array"
+}

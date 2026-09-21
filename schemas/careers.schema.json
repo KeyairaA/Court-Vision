@@ -1,0 +1,231 @@
+{
+  "$defs": {
+    "CareerRecord": {
+      "additionalProperties": false,
+      "description": "Games-weighted totals across the published window only.",
+      "properties": {
+        "ast": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "ast_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ast_pg": {
+          "type": "number"
+        },
+        "ast_to": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blk": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "blk_pg": {
+          "type": "number"
+        },
+        "efg_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg3_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg3a_rate": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fg_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "first_season": {
+          "type": "integer"
+        },
+        "ft_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ftr": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gp": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "last_season": {
+          "type": "integer"
+        },
+        "min": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "min_pg": {
+          "type": "number"
+        },
+        "player_id": {
+          "type": "integer"
+        },
+        "player_name": {
+          "type": "string"
+        },
+        "pts": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "pts_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pts_pg": {
+          "type": "number"
+        },
+        "reb": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "reb_per36": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reb_pg": {
+          "type": "number"
+        },
+        "seasons_played": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "stl": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "stl_pg": {
+          "type": "number"
+        },
+        "tov": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "tov_pg": {
+          "type": "number"
+        },
+        "ts_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "player_id",
+        "player_name",
+        "first_season",
+        "last_season",
+        "seasons_played",
+        "gp",
+        "min",
+        "pts",
+        "reb",
+        "ast",
+        "stl",
+        "blk",
+        "tov",
+        "fg_pct",
+        "fg3_pct",
+        "ft_pct",
+        "ts_pct",
+        "efg_pct",
+        "fg3a_rate",
+        "ftr",
+        "ast_to",
+        "min_pg",
+        "pts_pg",
+        "reb_pg",
+        "ast_pg",
+        "stl_pg",
+        "blk_pg",
+        "tov_pg",
+        "pts_per36",
+        "reb_per36",
+        "ast_per36"
+      ],
+      "title": "CareerRecord",
+      "type": "object"
+    }
+  },
+  "$id": "https://court-vision/schemas/1.0.0/careers.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "items": {
+    "$ref": "#/$defs/CareerRecord"
+  },
+  "title": "Careers",
+  "type": "array"
+}
