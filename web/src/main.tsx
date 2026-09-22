@@ -1,11 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
-import { loadArtifact } from "./data/load";
+import { prefetchRoute } from "./data/prefetch";
 import "./index.css";
 
-// Start the manifest request before React renders; every view needs it first.
-void loadArtifact("manifest").catch(() => undefined);
+// Start this page's data before React renders or the route's code arrives.
+prefetchRoute(window.location.pathname);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

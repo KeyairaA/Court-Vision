@@ -57,6 +57,19 @@ export function checkManifest(value: unknown): Manifest {
 
 const cache = new Map<ArtifactName, Promise<unknown>>();
 const settled = new Map<ArtifactName, unknown>();
+const failed = new Map<ArtifactName, ArtifactError>();
+const listeners = new Set<() => void>();
+const notify = () => listeners.forEach((l) => l());
+
+/** For useSyncExternalStore: called whenever any artifact loads or fails. */
+export function subscribeArtifacts(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function asArtifactError(name: ArtifactName, error: unknown): ArtifactError {
+  return error instanceof ArtifactError ? error : new ArtifactError("parse", name, String(error));
+}
 
 async function load<N extends ArtifactName>(name: N): Promise<ArtifactMap[N]> {
   if (name === "manifest") {
@@ -73,13 +86,17 @@ async function load<N extends ArtifactName>(name: N): Promise<ArtifactMap[N]> {
 export function loadArtifact<N extends ArtifactName>(name: N): Promise<ArtifactMap[N]> {
   let pending = cache.get(name) as Promise<ArtifactMap[N]> | undefined;
   if (!pending) {
+    if (failed.delete(name)) notify();
     pending = load(name).then(
       (data) => {
         settled.set(name, data);
+        notify();
         return data;
       },
       (error: unknown) => {
         cache.delete(name);
+        failed.set(name, asArtifactError(name, error));
+        notify();
         throw error;
       },
     );
@@ -93,8 +110,14 @@ export function peekArtifact<N extends ArtifactName>(name: N): ArtifactMap[N] | 
   return settled.get(name) as ArtifactMap[N] | undefined;
 }
 
+/** The last failure for an artifact, until it is retried. */
+export function peekArtifactError(name: ArtifactName): ArtifactError | undefined {
+  return failed.get(name);
+}
+
 /** Test hook: forget everything loaded so far. */
 export function resetArtifactCache(): void {
   cache.clear();
   settled.clear();
+  failed.clear();
 }

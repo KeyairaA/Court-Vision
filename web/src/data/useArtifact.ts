@@ -1,36 +1,28 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import type { ArtifactMap, ArtifactName } from "./contract";
-import { ArtifactError, loadArtifact, peekArtifact } from "./load";
+import { loadArtifact, peekArtifact, peekArtifactError, subscribeArtifacts, type ArtifactError } from "./load";
 
 export type ArtifactState<T> =
   | { status: "loading" }
   | { status: "error"; error: ArtifactError; retry: () => void }
   | { status: "ready"; data: T };
 
-function toArtifactError(name: ArtifactName, error: unknown): ArtifactError {
-  return error instanceof ArtifactError ? error : new ArtifactError("parse", name, String(error));
-}
-
+/**
+ * An artifact as React state. Reads straight from the loader's cache through
+ * useSyncExternalStore, so a component re-renders whenever the artifact
+ * settles, including when a prefetch finished before the component mounted.
+ */
 export function useArtifact<N extends ArtifactName>(name: N): ArtifactState<ArtifactMap[N]> {
-  const [attempt, setAttempt] = useState(0);
-  const [state, setState] = useState<{ key: string; value: ArtifactState<ArtifactMap[N]> } | null>(null);
-  const key = `${name}:${attempt}`;
-  const retry = useCallback(() => setAttempt((n) => n + 1), []);
+  const data = useSyncExternalStore(subscribeArtifacts, () => peekArtifact(name));
+  const error = useSyncExternalStore(subscribeArtifacts, () => peekArtifactError(name));
 
   useEffect(() => {
-    if (peekArtifact(name)) return;
-    let live = true;
-    loadArtifact(name).then(
-      (data) => live && setState({ key, value: { status: "ready", data } }),
-      (error: unknown) => live && setState({ key, value: { status: "error", error: toArtifactError(name, error), retry } }),
-    );
-    return () => {
-      live = false;
-    };
-  }, [name, key, retry]);
+    if (!peekArtifact(name) && !peekArtifactError(name)) void loadArtifact(name).catch(() => undefined);
+  }, [name]);
 
-  const cached = peekArtifact(name);
-  if (cached) return { status: "ready", data: cached };
-  if (state && state.key === key) return state.value;
+  const retry = useCallback(() => void loadArtifact(name).catch(() => undefined), [name]);
+
+  if (data !== undefined) return { status: "ready", data };
+  if (error) return { status: "error", error, retry };
   return { status: "loading" };
 }

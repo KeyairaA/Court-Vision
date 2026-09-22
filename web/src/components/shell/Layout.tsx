@@ -17,7 +17,7 @@ export function Layout() {
       </a>
       <Sidebar manifest={data} />
       <PhoneHeader manifest={data} />
-      <main id="main" className="flex min-w-0 flex-1 flex-col gap-5 px-4 pb-7 pt-6 md:gap-6 md:px-10 md:pb-12 md:pt-9">
+      <main id="main" tabIndex={-1} className="outline-none flex min-w-0 flex-1 flex-col gap-5 px-4 pb-7 pt-6 md:gap-6 md:px-10 md:pb-12 md:pt-9">
         {manifest.status === "error" ? <ErrorState error={manifest.error} retry={manifest.retry} /> : null}
         {data ? <PartialSeasonBanner manifest={data} /> : null}
         {manifest.status === "error" ? null : (
