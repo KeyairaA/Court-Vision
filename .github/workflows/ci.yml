@@ -1,6 +1,7 @@
 # Court Vision CI
 #
-# Runs on every push and pull request. Two jobs, one per half of the contract:
+# Runs on every push and pull request. Three jobs: one per half of the
+# contract, plus the site that renders it:
 #
 #   pipeline   lint, tests, and the Python side of the contract: the committed
 #              JSON Schemas must match the artifact models, and the committed
@@ -9,6 +10,10 @@
 #   types      the TypeScript side: regenerating types from the committed
 #              schemas must reproduce the committed file exactly, and the
 #              compile-time assertions must hold.
+#
+#   web        the frontend: lint, typecheck against the generated contract
+#              types, unit tests (including the published data), production
+#              build, and the performance budget.
 #
 # Together they make it impossible to merge a change that renames or retypes a
 # field on one side of the Python/TypeScript boundary but not the other.
@@ -89,3 +94,37 @@ jobs:
 
       - name: Compile-time contract assertions
         run: npm run check --prefix schemas
+
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck against the artifact contract
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Performance budget
+        run: npm run budget

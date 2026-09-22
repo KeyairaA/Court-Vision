@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@import "@fontsource/barlow/latin-400.css";
+@import "@fontsource/barlow/latin-500.css";
+@import "@fontsource/barlow/latin-600.css";
+@import "@fontsource/barlow/latin-700.css";
+@import "@fontsource/barlow-condensed/latin-700.css";
+@import "@fontsource/barlow-condensed/latin-800.css";
+
+/*
+ * Design tokens, from claude/12-design-direction.md.
+ *
+ * Every color is a theme variable, so utilities like bg-card or text-ink
+ * resolve to the light values by default and to the dark values under
+ * [data-theme="dark"]. Components never branch on the theme themselves.
+ */
+@theme {
+  --font-sans: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+
+  --color-chrome: #121212;
+  --color-chrome-raised: #242424;
+  --color-chrome-ink: #f4f4f2;
+  --color-chrome-ink-2: #a3a3a0;
+  --color-accent: #d95926;
+
+  --color-page: #f2f2f0;
+  --color-card: #ffffff;
+  --color-line: #e3e3df;
+  --color-ink: #111111;
+  --color-ink-2: #5b5b5b;
+  --color-muted: #6f6f6b;
+  --color-rule: #111111;
+  --color-field: #ffffff;
+  --color-field-line: #c9c9c4;
+  --color-highlight: #fbf4ef;
+  --color-accent-ink: #b4461a;
+  --color-notice: #f7e6dc;
+  --color-notice-ink: #8a3412;
+
+  --color-grid: #e6e6e3;
+  --color-band: #f1f1ee;
+  --color-band-expansion: #f7eee7;
+  --color-series-1: #d95926;
+  --color-series-2: #2a78d6;
+}
+
+[data-theme="dark"] {
+  --color-page: #0c0c0c;
+  --color-card: #171717;
+  --color-line: #2a2a2a;
+  --color-ink: #f4f4f2;
+  --color-ink-2: #a3a3a0;
+  --color-muted: #8f8f8b;
+  --color-rule: #f4f4f2;
+  --color-field: #1f1f1f;
+  --color-field-line: #3a3a3a;
+  --color-highlight: #221a15;
+  --color-accent-ink: #f07a45;
+  --color-notice: #3a2418;
+  --color-notice-ink: #f5a57f;
+
+  --color-grid: #2c2c2c;
+  --color-band: #1f1f1f;
+  --color-band-expansion: #271f1a;
+  --color-series-2: #3987e5;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Uppercase condensed label: control labels, table headers, KPI captions. */
+@utility label-caps {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
