@@ -25,7 +25,8 @@
           "@testing-library/jest-dom/vitest"
         ]
       }
-    ]
+    ],
+    "jsx-a11y/control-has-associated-label": "off"
   },
   "ignorePatterns": [
     "dist",

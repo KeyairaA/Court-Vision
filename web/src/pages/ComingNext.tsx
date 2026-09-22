@@ -18,9 +18,6 @@ export function ComingNext({ eyebrow, title, summary }: { eyebrow: string; title
   );
 }
 
-export const Leaders = () => (
-  <ComingNext eyebrow="Leaderboard" title="Leaders" summary="Rank any season by points, rebounds, assists, efficiency and more, per game or per 36 minutes, with true shooting beside every scoring line." />
-);
 export const Compare = () => (
   <ComingNext eyebrow="Player comparison" title="Compare" summary="Two players side by side, per game, with the sample size stated up front so a three-season career is never read as a nine-season one." />
 );

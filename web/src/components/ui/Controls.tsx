@@ -36,3 +36,35 @@ export function Checkbox({ checked, onChange, children }: { checked: boolean; on
     </label>
   );
 }
+
+export function Segmented<T extends string>({ label, value, options, onChange, disabled = false, note }: {
+  label: string;
+  value: T;
+  options: { value: T; label: string }[];
+  onChange: (value: T) => void;
+  disabled?: boolean;
+  /** Why the control is disabled, read by screen readers and shown on hover. */
+  note?: string;
+}) {
+  return (
+    <fieldset className="m-0 flex min-w-0 flex-col gap-1.5 border-0 p-0" disabled={disabled} title={disabled ? note : undefined}>
+      <legend className="label-caps mb-1.5 p-0">{label}</legend>
+      <div className={`flex gap-0.5 rounded border border-field-line bg-field p-px ${disabled ? "opacity-50" : ""}`}>
+        {options.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            aria-pressed={o.value === value}
+            onClick={() => onChange(o.value)}
+            className={`h-[42px] flex-1 whitespace-nowrap rounded-[3px] px-3.5 font-display text-[15px] font-bold uppercase tracking-[0.06em] md:h-[36px] ${
+              o.value === value ? "bg-ink text-card" : "text-ink-2 hover:text-ink"
+            }`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+      {disabled && note ? <span className="sr-only">{note}</span> : null}
+    </fieldset>
+  );
+}

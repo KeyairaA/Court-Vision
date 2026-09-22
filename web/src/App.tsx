@@ -1,9 +1,10 @@
 import { lazy } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import { Layout } from "./components/shell/Layout";
-import { Compare, HowItWorks, Leaders, Players } from "./pages/ComingNext";
+import { Compare, HowItWorks, Players } from "./pages/ComingNext";
 
 const Trends = lazy(() => import("./pages/Trends"));
+const Leaders = lazy(() => import("./pages/Leaders"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 export const routes = [
@@ -14,6 +15,7 @@ export const routes = [
       { path: "leaders", element: <Leaders /> },
       { path: "compare", element: <Compare /> },
       { path: "players", element: <Players /> },
+      { path: "players/:playerId", element: <Players /> },
       { path: "how-it-works", element: <HowItWorks /> },
       { path: "*", element: <NotFound /> },
     ],
