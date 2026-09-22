@@ -21,9 +21,6 @@ export function ComingNext({ eyebrow, title, summary }: { eyebrow: string; title
 export const Compare = () => (
   <ComingNext eyebrow="Player comparison" title="Compare" summary="Two players side by side, per game, with the sample size stated up front so a three-season career is never read as a nine-season one." />
 );
-export const Players = () => (
-  <ComingNext eyebrow="Player profile" title="Players" summary="Every season for any player in the 2017 to 2026 window, with short seasons marked so a 13-game year never reads as a slump." />
-);
 export const HowItWorks = () => (
   <ComingNext eyebrow="How it Works" title="How Court Vision calculates" summary="Where the numbers come from, the checks they pass before publishing, and the choices behind true shooting, league averages and careers." />
 );
