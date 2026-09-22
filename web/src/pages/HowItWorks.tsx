@@ -86,20 +86,34 @@ export function HowItWorksView({ manifest, trends, franchises }: { manifest: Man
           Every number starts as an official WNBA box score from stats.nba.com. Court Vision reads them from the sportsdataverse mirror, a public copy that
           updates daily, because the official site blocks the cloud servers a scheduled job runs on.
         </P>
-        <ol className="m-0 flex list-none flex-col gap-2.5 p-0 md:flex-row md:items-stretch" aria-label="How data reaches this site">
-          {flow.map((s, i) => (
-            <li key={s.name} className="flex flex-col gap-2.5 md:flex-1 md:flex-row md:items-center">
-              <div className={`flex flex-1 flex-col gap-1 rounded px-4 py-3.5 ${s.dark ? "bg-chrome text-chrome-ink" : "border border-line bg-card text-ink"}`}>
-                <span className="font-display text-lg font-extrabold uppercase tracking-[0.03em]">{s.name}</span>
-                <span className={`text-sm ${s.dark ? "text-chrome-ink-2" : "text-ink-2"}`}>{s.text}</span>
-              </div>
-              {i < flow.length - 1 ? (
-                <svg width="18" height="18" aria-hidden="true" className="shrink-0 self-center stroke-ink-2 max-md:rotate-90" style={{ fill: "none", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" }}>
-                  <path d="M2 9 H16 M11 4 L16 9 L11 14" />
-                </svg>
-              ) : null}
-            </li>
-          ))}
+        {/*
+          A grid, not flex: every card gets the same share of the width and
+          every card in the row stretches to the tallest one, whatever its text.
+          Arrows sit in their own narrow columns between the cards. Below xl the
+          column is too narrow for four across, so the cards stack full width.
+        */}
+        <ol
+          aria-label="How data reaches this site"
+          className="m-0 grid list-none grid-cols-1 justify-items-stretch gap-2 p-0 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] xl:items-stretch xl:gap-3"
+        >
+          {flow.flatMap((s, i) => [
+            <li
+              key={s.name}
+              className={`flex min-w-0 flex-col gap-1 rounded border px-4 py-3.5 ${s.dark ? "border-chrome bg-chrome text-chrome-ink" : "border-line bg-card text-ink"}`}
+            >
+              <span className="font-display text-lg font-extrabold uppercase leading-tight tracking-[0.03em]">{s.name}</span>
+              <span className={`text-sm leading-snug ${s.dark ? "text-chrome-ink-2" : "text-ink-2"}`}>{s.text}</span>
+            </li>,
+            ...(i < flow.length - 1
+              ? [
+                  <li key={`${s.name}-arrow`} aria-hidden="true" className="flex items-center justify-center">
+                    <svg width="18" height="18" className="rotate-90 stroke-ink-2 xl:rotate-0" style={{ fill: "none", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" }}>
+                      <path d="M2 9 H16 M11 4 L16 9 L11 14" />
+                    </svg>
+                  </li>,
+                ]
+              : []),
+          ])}
         </ol>
         <P>
           <strong>Data through {published ?? "the last publish"}</strong> is when the source last published, not when this site was built. A build that
